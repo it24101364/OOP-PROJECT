@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Head content remains the same -->
+</head>
+<body>
+<!-- Header remains the same -->
+
+<!-- Vendor Grid Section - Updated -->
+<section class="py-5">
+    <div class="container">
+        <!-- Filter section remains the same -->
+
+        <!-- Vendor Grid -->
+        <div class="vendor-container grid-view">
+            <div class="vendor-grid">
+                <div class="vendor-card" th:each="vendor : ${vendors}">
+                    <div class="vendor-image">
+                        <img th:src="${vendor.imageUrl}"
+                             th:alt="${vendor.name}"
+                             onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                        <div class="price-tag" th:text="${'$'.repeat(vendor.priceLevel)}">
+                            $$$
+                        </div>
+                    </div>
+                    <div class="vendor-info">
+                        <h3 class="vendor-name" th:text="${vendor.name}">Vendor Name</h3>
+                        <div class="vendor-tags">
+                            <span class="vendor-tag" th:text="${vendor.category}">Category</span>
+                            <span th:each="loc,iter : ${vendor.locations}"
+                                  th:text="${loc} + (${iter.last} ? '' : ', ')"
+                                  class="vendor-tag">Location</span>
+                        </div>
+                        <p class="vendor-description" th:text="${vendor.description}">Description</p>
+                        <div class="vendor-rating">
+                            <div class="rating-stars">
+                                    <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                        <i th:class="${i <= vendor.rating} ? 'fas fa-star' :
+                                                     ${(i - 0.5) <= vendor.rating} ? 'fas fa-star-half-alt' :
+                                                     'far fa-star'"></i>
+                                    </span>
+                            </div>
+                            <div class="review-count" th:text="'(' + ${vendor.reviewCount} + ' reviews)'"></div>
+                        </div>
+                        <a href="#" class="book-btn">Book Now</a>
+                    </div>
+                </div>
+
+                <!-- Empty state -->
+                <div th:if="${vendors.empty}" class="text-center py-5">
+                    <h4>No vendors found matching your criteria</h4>
+                    <p>Try adjusting your filters or <a th:href="@{/vendors}">reset all filters</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer remains the same -->
+
+<!-- JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Reset filters
+        document.getElementById('reset-filters').addEventListener('click', function() {
+            window.location.href = '/vendors';
+        });
+
+        // View toggle
+        const toggleView = (view) => {
+            document.querySelector('.vendor-container').className = `vendor-container ${view}-view`;
+            document.getElementById('grid-view').classList.toggle('active', view === 'grid');
+            document.getElementById('list-view').classList.toggle('active', view === 'list');
+        };
+
+        document.getElementById('grid-view').addEventListener('click', () => toggleView('grid'));
+        document.getElementById('list-view').addEventListener('click', () => toggleView('list'));
+    });
+</script>
+</body>
+</html>
