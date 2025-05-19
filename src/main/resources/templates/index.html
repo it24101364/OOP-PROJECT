@@ -1,64 +1,284 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <!-- Head content remains the same -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForeverWed - Wedding Vendors</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        /*.vendor-card {*/
+        /*    position: relative;*/
+        /*    margin-bottom: 20px;*/
+        /*    transition: transform 0.3s ease;*/
+        /*}*/
+        /*.vendor-card:hover {*/
+        /*    transform: translateY(-5px);*/
+        /*}*/
+        /*.vendor-actions {*/
+        /*    position: absolute;*/
+        /*    top: 10px;*/
+        /*    right: 10px;*/
+        /*    display: flex;*/
+        /*    gap: 5px;*/
+        /*    z-index: 10;*/
+        /*}*/
+        /*.btn-edit, .btn-delete {*/
+        /*    border-radius: 50%;*/
+        /*    width: 36px;*/
+        /*    height: 36px;*/
+        /*    display: flex;*/
+        /*    align-items: center;*/
+        /*    justify-content: center;*/
+        /*    background-color: white;*/
+        /*    box-shadow: 0 2px 5px rgba(0,0,0,0.2);*/
+        /*    border: none;*/
+        /*}*/
+        /*.btn-edit {*/
+        /*    color: #4a90e2;*/
+        /*}*/
+        /*.btn-edit:hover {*/
+        /*    background-color: #4a90e2;*/
+        /*    color: white;*/
+        /*}*/
+        /*.btn-delete {*/
+        /*    color: #e25c4a;*/
+        /*}*/
+        /*.btn-delete:hover {*/
+        /*    background-color: #e25c4a;*/
+        /*    color: white;*/
+        /*}*/
+        /*.add-vendor-btn {*/
+        /*    position: fixed;*/
+        /*    bottom: 30px;*/
+        /*    right: 30px;*/
+        /*    width: 60px;*/
+        /*    height: 60px;*/
+        /*    border-radius: 50%;*/
+        /*    background-color: #4a90e2;*/
+        /*    color: white;*/
+        /*    font-size: 24px;*/
+        /*    display: flex;*/
+        /*    align-items: center;*/
+        /*    justify-content: center;*/
+        /*    box-shadow: 0 4px 10px rgba(0,0,0,0.3);*/
+        /*    z-index: 1000;*/
+        /*    border: none;*/
+        /*}*/
+        /*.add-vendor-btn:hover {*/
+        /*    background-color: #3a80d2;*/
+        /*    transform: scale(1.05);*/
+        /*}*/
+        /*.price-tag {*/
+        /*    position: absolute;*/
+        /*    top: 10px;*/
+        /*    left: 10px;*/
+        /*    background-color: rgba(0,0,0,0.7);*/
+        /*    color: white;*/
+        /*    padding: 3px 8px;*/
+        /*    border-radius: 4px;*/
+        /*    font-weight: bold;*/
+        /*}*/
+        /*.price-selector {*/
+        /*    display: flex;*/
+        /*    gap: 15px;*/
+        /*}*/
+        /*.price-option {*/
+        /*    cursor: pointer;*/
+        /*    padding: 8px 12px;*/
+        /*    border: 1px solid #dee2e6;*/
+        /*    border-radius: 4px;*/
+        /*}*/
+        /*.price-option.selected {*/
+        /*    background-color: #4a90e2;*/
+        /*    color: white;*/
+        /*    border-color: #4a90e2;*/
+        /*}*/
+        /*.vendor-image img {*/
+        /*    width: 100%;*/
+        /*    height: 200px;*/
+        /*    object-fit: cover;*/
+        /*    border-radius: 8px 8px 0 0;*/
+        /*}*/
+        /*.vendor-info {*/
+        /*    padding: 15px;*/
+        /*    border: 1px solid #eee;*/
+        /*    border-top: none;*/
+        /*    border-radius: 0 0 8px 8px;*/
+        /*}*/
+        /*.no-vendors {*/
+        /*    text-align: center;*/
+        /*    padding: 50px 0;*/
+        /*}*/
+    </style>
 </head>
 <body>
-<!-- Header remains the same -->
-
-<!-- Vendor Grid Section - Updated -->
-<section class="py-5">
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
-        <!-- Filter section remains the same -->
+        <a class="navbar-brand" href="/">Forever<span>Wed</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/index}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/vendors}">Vendors</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin}">Admin</a>
+                </li>
+            </ul>
+            <div class="d-flex">
+                <a th:href="@{/logout}" class="btn btn-outline-danger">Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
 
-        <!-- Vendor Grid -->
-        <div class="vendor-container grid-view">
-            <div class="vendor-grid">
-                <div class="vendor-card" th:each="vendor : ${vendors}">
-                    <div class="vendor-image">
-                        <img th:src="${vendor.imageUrl}"
-                             th:alt="${vendor.name}"
-                             onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
-                        <div class="price-tag" th:text="${'$'.repeat(vendor.priceLevel)}">
-                            $$$
-                        </div>
+<!-- Main Content -->
+<div class="container my-5">
+    <!-- Page Header -->
+    <div class="page-header text-center mb-5">
+        <div class="container">
+            <h1 class="display-4">Find Your Perfect Wedding Vendors</h1>
+            <p class="lead text-muted">Discover top-rated professionals to make your special day unforgettable</p>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card filter-card mb-5">
+        <div class="card-body">
+            <form id="filter-form" th:action="@{/vendors}" method="get">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" name="category">
+                            <option value="">All Categories</option>
+                            <option th:each="category : ${categories}"
+                                    th:value="${category}"
+                                    th:text="${category}"
+                                    th:selected="${category == selectedCategory}"></option>
+                        </select>
                     </div>
-                    <div class="vendor-info">
-                        <h3 class="vendor-name" th:text="${vendor.name}">Vendor Name</h3>
-                        <div class="vendor-tags">
-                            <span class="vendor-tag" th:text="${vendor.category}">Category</span>
-                            <span th:each="loc,iter : ${vendor.locations}"
-                                  th:text="${loc} + (${iter.last} ? '' : ', ')"
-                                  class="vendor-tag">Location</span>
-                        </div>
-                        <p class="vendor-description" th:text="${vendor.description}">Description</p>
-                        <div class="vendor-rating">
-                            <div class="rating-stars">
-                                    <span th:each="i : ${#numbers.sequence(1, 5)}">
-                                        <i th:class="${i <= vendor.rating} ? 'fas fa-star' :
-                                                     ${(i - 0.5) <= vendor.rating} ? 'fas fa-star-half-alt' :
-                                                     'far fa-star'"></i>
-                                    </span>
+                    <div class="col-md-3">
+                        <label class="form-label">Price Range</label>
+                        <select class="form-select" name="priceRange">
+                            <option value="">All Prices</option>
+                            <option th:each="price : ${priceRanges}"
+                                    th:value="${price}"
+                                    th:text="${price}"
+                                    th:selected="${price == selectedPriceRange}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Location</label>
+                        <select class="form-select" name="location">
+                            <option value="">All Locations</option>
+                            <option th:each="location : ${locations}"
+                                    th:value="${location}"
+                                    th:text="${location}"
+                                    th:selected="${location == selectedLocation}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Sort By</label>
+                        <select class="form-select" name="sortBy">
+                            <option value="recommended" th:selected="${selectedSortBy == 'recommended'}">Recommended</option>
+                            <option value="price-asc" th:selected="${selectedSortBy == 'price-asc'}">Price: Low to High</option>
+                            <option value="price-desc" th:selected="${selectedSortBy == 'price-desc'}">Price: High to Low</option>
+                            <option value="rating" th:selected="${selectedSortBy == 'rating'}">Rating</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="fas fa-filter me-1"></i> Apply Filters
+                                </button>
+                                <button type="button" id="reset-filters" class="btn btn-outline-secondary">
+                                    <i class="fas fa-sync-alt me-1"></i> Reset
+                                </button>
                             </div>
-                            <div class="review-count" th:text="'(' + ${vendor.reviewCount} + ' reviews)'"></div>
+                            <div>
+                                <span class="badge bg-primary" th:text="${vendorCount} + ' vendors found'"></span>
+                            </div>
                         </div>
-                        <a href="#" class="book-btn">Book Now</a>
                     </div>
                 </div>
+            </form>
+        </div>
+    </div>
 
-                <!-- Empty state -->
-                <div th:if="${vendors.empty}" class="text-center py-5">
-                    <h4>No vendors found matching your criteria</h4>
-                    <p>Try adjusting your filters or <a th:href="@{/vendors}">reset all filters</a></p>
+    <!-- Vendor Grid -->
+    <div class="row">
+        <!-- Empty State -->
+        <div th:if="${vendors == null}" class="col-12">
+            <div class="no-vendors">
+                <i class="fas fa-heart-broken fa-4x mb-4" style="color: var(--accent-color);"></i>
+                <h3>No vendors found</h3>
+                <p class="text-muted mb-4">We couldn't find any vendors matching your criteria</p>
+                <button type="button" id="reset-filters-empty" class="btn btn-primary">
+                    <i class="fas fa-sync-alt me-1"></i> Reset Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- Vendor Cards -->
+        <div th:each="vendor : ${vendors}" class="col-md-4 mb-4">
+            <div class="vendor-card card h-100">
+                <div class="vendor-image">
+                    <img th:src="${vendor.imageUrl ?: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'}"
+                         th:alt="${vendor.name + ' image'}">
+                    <div class="price-tag" th:text="${'$'.repeat(vendor.priceLevel)}"></div>
+                </div>
+                <div class="vendor-info card-body">
+                    <h5 class="card-title" th:text="${vendor.name}"></h5>
+                    <div class="mb-3">
+                        <span class="badge vendor-category me-1" th:text="${vendor.category}"></span>
+                        <span th:each="loc,iter : ${vendor.locations}"
+                              th:text="${loc} + (${iter.last} ? '' : ', ')"
+                              class="badge vendor-location me-1"></span>
+                    </div>
+                    <p class="card-text text-muted mb-3" th:text="${#strings.abbreviate(vendor.description, 100)}"></p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="rating">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                    <i th:class="${i <= vendor.rating} ? 'fas fa-star' :
+                                     (${(i - 0.5) <= vendor.rating} ? 'fas fa-star-half-alt' : 'far fa-star')"></i>
+                                </span>
+                            <small class="text-muted ms-1" th:text="'(' + ${vendor.reviewCount} + ')'"></small>
+                        </div>
+                        <a th:href="@{'/vendors/' + ${vendor.id}}" class="btn btn-outline-primary">
+                            Book Now <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<!-- Footer remains the same -->
+<!-- Footer -->
+<footer class="bg-white py-4 mt-5 border-top">
+    <div class="container text-center">
+        <p class="mb-0 text-muted">&copy; 2023 ForeverWed. All rights reserved.</p>
+    </div>
+</footer>
 
-<!-- JavaScript -->
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JS -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Reset filters
@@ -66,15 +286,31 @@
             window.location.href = '/vendors';
         });
 
-        // View toggle
-        const toggleView = (view) => {
-            document.querySelector('.vendor-container').className = `vendor-container ${view}-view`;
-            document.getElementById('grid-view').classList.toggle('active', view === 'grid');
-            document.getElementById('list-view').classList.toggle('active', view === 'list');
+        // Reset filters from empty state
+        const resetEmptyBtn = document.getElementById('reset-filters-empty');
+        if (resetEmptyBtn) {
+            resetEmptyBtn.addEventListener('click', function() {
+                window.location.href = '/vendors';
+            });
+        }
+
+        // Add animation class to cards when they come into view
+        const observerOptions = {
+            threshold: 0.1
         };
 
-        document.getElementById('grid-view').addEventListener('click', () => toggleView('grid'));
-        document.getElementById('list-view').addEventListener('click', () => toggleView('list'));
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.vendor-card').forEach(card => {
+            observer.observe(card);
+        });
     });
 </script>
 </body>

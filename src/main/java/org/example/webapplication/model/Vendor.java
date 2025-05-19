@@ -4,40 +4,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Vendor {
-    private String id;  // ID as a String now
+    private String id;
     private String name;
     private String category;
     private List<String> locations;
     private String description;
-    private int priceLevel; // 1-4, represented as $ to $$$$
-    private int rating; // Out of 5
+    private int priceLevel; // 1-4
+    private int rating;     // 1-5
     private int reviewCount;
     private String imageUrl;
-    private List<String> tags;  // Changed from keywords to tags
 
-    // Default constructor
+
     public Vendor() {
         this.locations = new ArrayList<>();
-        this.tags = new ArrayList<>();
     }
 
-    // Constructor with parameters
     public Vendor(String id, String name, String category, List<String> locations,
-                  String description, int priceLevel, int rating, int reviewCount,
-                  String imageUrl, List<String> tags) {
+                  String description, int priceLevel, int rating, int reviewCount, String imageUrl) {
         this.id = id;
         this.name = name;
         this.category = category;
-        this.locations = locations;
+        this.locations = locations != null ? locations : new ArrayList<>();
         this.description = description;
         this.priceLevel = priceLevel;
         this.rating = rating;
         this.reviewCount = reviewCount;
         this.imageUrl = imageUrl;
-        this.tags = tags;
+
     }
 
     // Getters and Setters
+
     public String getId() {
         return id;
     }
@@ -110,20 +107,9 @@ public class Vendor {
         this.imageUrl = imageUrl;
     }
 
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
-
+    // Display price level as dollar signs ($)
     public String getPriceLevelDisplay() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < priceLevel; i++) {
-            sb.append("$");
-        }
-        return sb.toString();
+        return "$".repeat(Math.max(0, priceLevel));
     }
 
     @Override
