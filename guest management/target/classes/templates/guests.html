@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guest List | Wedding Planner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fb; font-family: 'Inter', 'Segoe UI', Arial, sans-serif; }
+        .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 220px; background: #fff; border-right: 1px solid #f0f0f0; padding: 32px 0 0 0; min-height: 100vh; box-shadow: 2px 0 24px 0 rgba(40,60,120,0.07); z-index: 100; }
+        .sidebar .nav { flex-direction: column; gap: 8px; }
+        .sidebar .nav-link { color: #7d8fb3; font-weight: 500; font-size: 1.08rem; border-radius: 8px; padding: 10px 32px; display: flex; align-items: center; gap: 12px; transition: background .14s, color .14s; }
+        .sidebar .nav-link.active, .sidebar .nav-link:hover { background: #f3f0ff; color: #6d28d9; }
+        .sidebar .nav-link i { font-size: 1.25rem; }
+        .main-panel { margin-left: 240px; padding: 40px 0 0 0; min-height: 100vh; }
+        .dashboard-container { max-width: 1050px; margin: 0 auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 32px 0 rgba(80,60,180,0.06); padding: 32px 32px 24px 32px; }
+        .tabs-bar { border-bottom: 2px solid #f0f0f0; margin-bottom: 28px; }
+        .tabs-bar .nav-link { border: none; background: none; color: #b0b4c3; font-weight: 500; font-size: 1.08rem; border-radius: 0; margin-right: 24px; padding: 0 0 12px 0; }
+        .tabs-bar .nav-link.active { color: #a259e6; border-bottom: 3px solid #a259e6; background: none; }
+        .search-bar { position: relative; flex: 1 1 350px; min-width: 200px; max-width: 420px; }
+        .search-bar input[type="text"] { border-radius: 22px; padding-left: 38px; background: #f6f7fb; border: 1.5px solid #ececff; font-size: 1rem; height: 42px; }
+        .search-bar i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #b0b4c3; font-size: 1.13rem; }
+        .filter-select { min-width: 130px; border-radius: 18px; background: #f6f7fb; border: 1.5px solid #ececff; color: #6d28d9; font-weight: 500; height: 42px; }
+        .add-guest-btn {
+            background: linear-gradient(90deg, #a259e6 0%, #6d28d9 100%);
+            color: #fff;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.09rem;
+            padding: 0 26px;
+            height: 42px;
+            border: none;
+            transition: all 0.3s cubic-bezier(.4,2,.3,1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(106, 57, 230, 0.13);
+            letter-spacing: 0.01em;
+        }
+        .add-guest-btn:hover {
+            background: linear-gradient(90deg, #6d28d9 0%, #a259e6 100%);
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(106, 57, 230, 0.18);
+        }
+        .guest-table { border-radius: 12px; overflow: hidden; box-shadow: 0 2px 16px 0 rgba(80,60,180,0.04); margin-bottom: 16px; }
+        .guest-table thead { background: #f3e9ff; }
+        .guest-table th { color: #a259e6; font-weight: 700; font-size: 1.06rem; border-bottom: none; }
+        .guest-table td { vertical-align: middle; font-size: 1.04rem; }
+        .status-badge { font-size: 0.97rem; padding: 4px 16px; border-radius: 13px; font-weight: 500; letter-spacing: 0.01em; display: inline-block; }
+        .confirmed { background: #e6f9ed; color: #1e9d5c; }
+        .pending { background: #fffbe6; color: #b59e2d; }
+        .declined { background: #ffe6e9; color: #e14d5a; }
+        .action-buttons { white-space: nowrap; display: flex; gap: 10px; align-items: center; }
+        .action-btn { border: none; background: none; color: #7d8fb3; font-size: 1.18rem; border-radius: 7px; padding: 6px 9px; transition: background .13s, color .13s; }
+        .action-btn:hover { background: #f3f0ff; color: #6d28d9; }
+        .pagination { display: flex; align-items: center; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+        .pagination .page-link, .pagination .page-item.active .page-link { border-radius: 50%; border: none; background: transparent; color: #a259e6; font-weight: bold; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; }
+        .pagination .page-item.active .page-link { background: #f3e9ff; color: #6d28d9; }
+        .showing-info { color: #b0b4c3; font-size: 0.98rem; margin-top: 10px; }
+        @media (max-width: 1100px) { .main-panel { margin-left: 0; } .sidebar { display: none; } .dashboard-container { max-width: 99vw; padding: 18px 4vw; } }
+        @media (max-width: 700px) { .dashboard-container { padding: 10px 2vw; } .tabs-bar .nav-link { margin-right: 10px; font-size: 1rem; } }
+    </style>
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar d-flex flex-column">
+    <div class="mb-5 text-center">
+        <span class="fw-bold fs-4" style="color:#6d28d9;">Wedding Planner</span>
+    </div>
+    <nav class="nav flex-column">
+        <a class="nav-link active" href="/guests"><i class="bi bi-envelope"></i> Invitations</a>
+        <a class="nav-link" href="#"><i class="bi bi-people"></i> Vendors</a>
+        <a class="nav-link" href="#"><i class="bi bi-currency-dollar"></i> Budget</a>
+        <a class="nav-link" href="#"><i class="bi bi-gift"></i> Registry</a>
+        <a class="nav-link" href="#"><i class="bi bi-gear"></i> Settings</a>
+        <a class="nav-link mt-auto" href="/" style="color: #e74c3c;">
+            <i class="bi bi-box-arrow-right"></i> Sign Out
+        </a>
+    </nav>
+</div>
+
+<!-- Main Panel -->
+<div class="main-panel">
+    <div class="dashboard-container">
+        <!-- Tabs -->
+        <ul class="nav tabs-bar mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">Guest List</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Invitation Templates</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Invitation Editor</a>
+            </li>
+        </ul>
+
+        <!-- Search and Filters (SINGLE LINE, BEAUTIFUL, WIDER SEARCH) -->
+        <form action="/guests" method="get" class="d-flex align-items-center mb-4 gap-3 flex-nowrap">
+            <div class="search-bar flex-grow-1" style="max-width: 420px;">
+                <i class="bi bi-search"></i>
+                <input type="text" class="form-control" name="search" placeholder="Search guests..." th:value="${param.search}">
+            </div>
+            <select class="form-select filter-select" name="group">
+                <option value="">All Groups</option>
+                <option th:each="group : ${groups}" th:value="${group}" th:text="${group}" th:selected="${param.group == group}"></option>
+            </select>
+            <select class="form-select filter-select" name="status">
+                <option value="">All Status</option>
+                <option th:each="status : ${statuses}" th:value="${status}" th:text="${status}" th:selected="${param.status == status}"></option>
+            </select>
+            <button type="submit" class="btn btn-outline-primary" style="border-radius:18px; height:42px; font-weight:600;">Filter</button>
+            <button type="button" class="add-guest-btn ms-auto" data-bs-toggle="modal" data-bs-target="#addModal">
+                <i class="bi bi-plus-lg"></i> Add
+            </button>
+        </form>
+
+        <!-- Add Guest Modal -->
+        <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" style="color: #6d28d9;">Add New Guest</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="/guests" method="post" th:object="${newGuest}">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" th:field="*{name}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" th:field="*{email}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Group</label>
+                                <input type="text" class="form-control" th:field="*{group}" placeholder="Family, Friends, etc." required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" th:field="*{status}" required>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Confirmed">Confirmed</option>
+                                    <option value="Declined">Declined</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 form-check form-switch">
+                                <input class="form-check-input" type="checkbox" th:field="*{plusOne}" id="plusOne">
+                                <label class="form-check-label" for="plusOne">Plus One</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" style="background: #6d28d9; border: none;">Add Guest</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guest List Table -->
+        <table class="table guest-table align-middle mb-0">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Group</th>
+                <th>+1</th>
+                <th>Status</th>
+                <th class="text-center">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="guest : ${guests}">
+                <td th:text="${guest.name}"></td>
+                <td th:text="${guest.email}"></td>
+                <td th:text="${guest.group}"></td>
+                <td th:text="${guest.plusOne ? 'Yes' : 'No'}"></td>
+                <td>
+                    <span class="status-badge" th:classappend="${
+                        guest.status == 'Confirmed' ? 'confirmed' :
+                        guest.status == 'Pending' ? 'pending' : 'declined'
+                    }" th:text="${guest.status}">
+                    </span>
+                </td>
+                <td class="action-buttons text-center">
+                    <button class="action-btn edit-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editModal"
+                            th:data-id="${guest.id}"
+                            th:data-name="${guest.name}"
+                            th:data-email="${guest.email}"
+                            th:data-group="${guest.group}"
+                            th:data-plusone="${guest.plusOne}"
+                            th:data-status="${guest.status}"
+                            title="Edit">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <a th:href="@{/guests/delete/{id}(id=${guest.id})}" class="action-btn" title="Delete" onclick="return confirm('Delete this guest?')">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Edit Guest Modal -->
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" style="color: #6d28d9;">Edit Guest</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="/guests/update" method="post">
+                        <input type="hidden" name="id" id="editId">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="editName" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editEmail" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Group</label>
+                                <input type="text" class="form-control" id="editGroup" name="group" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" id="editStatus" name="status" required>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Confirmed">Confirmed</option>
+                                    <option value="Declined">Declined</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="editPlusOne" name="plusOne">
+                                <label class="form-check-label" for="editPlusOne">Plus One</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" style="background: #6d28d9; border: none;">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty table message -->
+        <div class="text-center py-5" th:if="${#lists.isEmpty(guests)}">
+            <i class="bi bi-people fs-1 text-muted"></i>
+            <p class="mt-3 text-muted">No guests yet. Add your first guest to get started!</p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Edit Modal Handler
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('editId').value = this.dataset.id;
+                document.getElementById('editName').value = this.dataset.name;
+                document.getElementById('editEmail').value = this.dataset.email;
+                document.getElementById('editGroup').value = this.dataset.group;
+                document.getElementById('editStatus').value = this.dataset.status;
+                document.getElementById('editPlusOne').checked = this.dataset.plusone === 'true';
+            });
+        });
+    });
+</script>
+</body>
+</html>
