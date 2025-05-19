@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Booking & Payment System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #d1d6ef;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      background-color: #ecf0f1;
+      margin: 0 5px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .tab.active {
+      background-color: #3498db;
+      color: white;
+    }
+
+    .content {
+      max-width: 600px;
+      margin: 20px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      display: none;
+    }
+
+    .content.active {
+      display: block;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #dff0d8;
+      color: #3c763d;
+      border-radius: 5px;
+      display: none;
+    }
+
+    #cardModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    #cardModal .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 320px;
+      text-align: center;
+    }
+
+    .card-logos {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .card-logos img {
+      height: 30px;
+    }
+
+    .profile-info p {
+      font-size: 16px;
+      margin: 8px 0;
+    }
+
+  </style>
+</head>
+<body>
+<div class="header">
+  <h1>Booking & Payment System</h1>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="booking">Booking</div>
+  <div class="tab" data-tab="payment">Payment</div>
+  <div class="tab" data-tab="profile">Profile</div>
+</div>
+
+<div id="booking" class="content active">
+  <h2>Book a Service</h2>
+  <label for="service">Service Type</label>
+  <input type="text" id="service" placeholder="e.g. Catering Vendors">
+
+  <label for="date">Preferred Date</label>
+  <input type="date" id="date">
+
+  <label for="notes">Additional Notes</label>
+  <textarea id="notes" rows="3"></textarea>
+
+  <button onclick="submitBooking()">Submit Booking</button>
+  <div class="message" id="bookingMsg">Booking submitted successfully!</div>
+</div>
+
+<div id="payment" class="content">
+  <h2>Make a Payment</h2>
+  <label for="amount">Amount</label>
+  <input type="number" id="amount" placeholder="Enter amount">
+
+  <label for="method">Payment Method</label>
+  <select id="method">
+    <option>Credit Card</option>
+    <option>Debit Card</option>
+    <option>PayPal</option>
+    <option>Bank Transfer</option>
+  </select>
+
+  <button onclick="submitPayment()">Pay Now</button>
+  <div class="message" id="paymentMsg">Payment successful!</div>
+</div>
+
+<div id="profile" class="content">
+  <h2>User Profile</h2>
+  <div class="profile-info">
+    <p><strong>Username:</strong> johndoe</p>
+    <p><strong>Email:</strong> johndoe@example.com</p>
+    <p><strong>Total Bookings:</strong> 3</p>
+  </div>
+</div>
+
+<!-- Card Payment Modal -->
+<div id="cardModal">
+  <div class="modal-content">
+    <h3>Enter Card Details</h3>
+    <div class="card-logos">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" />
+      <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="MasterCard" />
+      <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg" alt="Amex" />
+      <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Discover_Card_logo.svg" alt="Discover" />
+    </div>
+    <label for="cardNumber">Card Number</label>
+    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+
+    <label for="expiry">Expiry Date</label>
+    <input type="text" id="expiry" placeholder="MM/YY" maxlength="5">
+
+    <label for="cvv">CVV</label>
+    <input type="text" id="cvv" placeholder="123" maxlength="3">
+
+    <button onclick="submitCardDetails()">Submit Payment</button>
+  </div>
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const contents = document.querySelectorAll('.content');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      contents.forEach(c => c.classList.remove('active'));
+
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  function submitBooking() {
+    const service = document.getElementById("service").value;
+    const date = document.getElementById("date").value;
+    const notes = document.getElementById("notes").value;
+
+    fetch("http://localhost:8080/api/booking", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ service, date, notes })
+    })
+    .then(response => response.text())
+    .then(message => {
+      const msg = document.getElementById("bookingMsg");
+      msg.innerText = message;
+      msg.style.display = "block";
+
+      document.getElementById("service").value = "";
+      document.getElementById("date").value = "";
+      document.getElementById("notes").value = "";
+
+      setTimeout(() => { msg.style.display = "none"; }, 3000);
+    })
+    .catch(error => console.error("Booking error:", error));
+  }
+
+  function submitPayment() {
+    const method = document.getElementById("method").value;
+
+    if (method === "Credit Card" || method === "Debit Card") {
+      document.getElementById("cardModal").style.display = "flex";
+    } else {
+      completePayment();
+    }
+  }
+
+  function submitCardDetails() {
+    const amount = document.getElementById("amount").value;
+    const method = document.getElementById("method").value;
+    const cardNumber = document.getElementById("cardNumber").value;
+    const expiry = document.getElementById("expiry").value;
+    const cvv = document.getElementById("cvv").value;
+
+    if (!cardNumber || !expiry || !cvv) {
+      alert("Please fill in all card details.");
+      return;
+    }
+
+    document.getElementById("cardModal").style.display = "none";
+
+    fetch("http://localhost:8080/api/payment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount, method, cardNumber, expiry, cvv })
+    })
+    .then(response => response.text())
+    .then(message => {
+      const msg = document.getElementById("paymentMsg");
+      msg.innerText = message;
+      msg.style.display = "block";
+
+      document.getElementById("amount").value = "";
+      document.getElementById("method").selectedIndex = 0;
+      document.getElementById("cardNumber").value = "";
+      document.getElementById("expiry").value = "";
+      document.getElementById("cvv").value = "";
+
+      setTimeout(() => { msg.style.display = "none"; }, 3000);
+    })
+    .catch(error => console.error("Payment error:", error));
+  }
+
+  function completePayment() {
+    const amount = document.getElementById("amount").value;
+    const method = document.getElementById("method").value;
+
+    fetch("http://localhost:8080/api/payment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount, method })
+    })
+    .then(response => response.text())
+    .then(message => {
+      const msg = document.getElementById("paymentMsg");
+      msg.innerText = message;
+      msg.style.display = "block";
+
+      document.getElementById("amount").value = "";
+      document.getElementById("method").selectedIndex = 0;
+
+      setTimeout(() => { msg.style.display = "none"; }, 3000);
+    })
+    .catch(error => console.error("Payment error:", error));
+  }
+</script>
+</body>
+</html>
